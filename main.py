@@ -14,6 +14,15 @@ from tkinter import filedialog, messagebox, ttk
 from sorter import PhotoSorter
 from utils import setup_logger
 
+# Check if python-docx is installed (for generating student Word reports)
+try:
+    from docx import Document
+    from docx.shared import Inches, Pt
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    HAS_DOCX = True
+except ImportError:
+    HAS_DOCX = False
+
 # ---------------------------------------------------------------------------
 # NVIDIA API Integration and Initialization Configuration
 # ---------------------------------------------------------------------------
