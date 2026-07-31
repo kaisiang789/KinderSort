@@ -14,6 +14,15 @@ from tkinter import filedialog, messagebox, ttk
 from sorter import PhotoSorter
 from utils import setup_logger
 
+# ---------------------------------------------------------------------------
+# NVIDIA API Integration and Initialization Configuration
+# ---------------------------------------------------------------------------
+BUILTIN_NVIDIA_API_KEY = os.environ.get(
+    "NVIDIA_API_KEY", 
+    "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"  
+)
+
+
 
 class KinderSortApp(tk.Tk):
     """Main application window for KinderSort — Student Photo Organiser."""
@@ -217,7 +226,14 @@ class KinderSortApp(tk.Tk):
         self._start_ticker()
 
         logger = setup_logger(output_path)
-        sorter = PhotoSorter(ref_path, events_path, output_path, logger)
+
+        sorter = PhotoSorter(
+            ref_path, 
+            events_path, 
+            output_path, 
+            logger, 
+            api_key=BUILTIN_NVIDIA_API_KEY
+        )
 
         thread = threading.Thread(
             target=self._run_sorting, args=(sorter,), daemon=True
