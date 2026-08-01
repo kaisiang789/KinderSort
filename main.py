@@ -439,6 +439,10 @@ class KinderSortApp(tk.Tk):
         ]
         self._write_summary("\n".join(lines))
 
+        #Write runtime summary to the log
+        logger = setup_logger(Path(self._output_var.get()))
+        logger.info(f"Sorting session finished. Total: {summary['total']}, Matched: {summary['matched']}, Unmatched: {summary['unmatched']}")
+
         if summary["total"] == 0:
             messagebox.showwarning(
                 "No images found",
