@@ -266,6 +266,12 @@ class KinderSortApp(tk.Tk):
             skipped_names = sorter.load_references(
                 progress_callback=self._on_ref_progress
             )
+        except FileNotFoundError as exc:
+            self.after(0, self._on_error, f"File path error: {exc}")
+            return
+        except PermissionError as exc:
+            self.after(0, self._on_error, f"Permission denied accessing folder: {exc}")
+            return
         except Exception as exc:  # noqa: BLE001
             self.after(0, self._on_error, str(exc))
             return
@@ -283,8 +289,15 @@ class KinderSortApp(tk.Tk):
                 cancelled=self._cancel_flag.is_set,
             )
             self.after(0, self._on_done, summary)
+        except FileNotFoundError as exc:
+            self.after(0, self._on_error, f"File path error: {exc}")
+            return
+        except PermissionError as exc:
+            self.after(0, self._on_error, f"Permission denied accessing folder: {exc}")
+            return
         except Exception as exc:  # noqa: BLE001
             self.after(0, self._on_error, str(exc))
+            return
 
     def _start_ticker(self) -> None:
         """Start the spinning clock emoji and elapsed timer."""
