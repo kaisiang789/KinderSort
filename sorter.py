@@ -112,33 +112,17 @@ class PhotoSorter:
     # ------------------------------------------------------------------
     # Main sort loop
     # ------------------------------------------------------------------
-
-    def sort_all(
+ def sort_all(
         self,
         progress_callback: Callable[[int, int, str], None],
         cancelled: Callable[[], bool],
     ) -> dict[str, int]:
-        """Sort all event photos into per-student output subfolders.
-
-        Processes one image at a time to keep RAM usage low.  For each detected
-        face in a photo the nearest student is identified; the photo is copied
-        to every matched student folder (allowing group shots).  Photos with no
-        match or no face are copied to ``_unmatched/``.
-
-        Args:
-            progress_callback: Called with ``(current, total, filename)`` after
-                each image so the GUI can update its progress bar.
-            cancelled: Zero-arg callable; returns True if the user has cancelled.
-
-        Returns:
-            Dict with keys ``total``, ``matched``, ``unmatched``, ``skipped``.
-        """
+        """Stage 2: High-precision pipeline for comparison and classification."""
         images = collect_event_images(self.events_folder)
         total = len(images)
-
         counts = {"total": total, "matched": 0, "unmatched": 0, "skipped": 0}
 
-        self.logger.info("Starting sort — %d images found", total)
+        self.logger.info("Starting High-Precision Face Sorting - %d images found", total)
 
         for current, (image_path, event_name) in enumerate(images, start=1):
             if cancelled():
@@ -146,7 +130,6 @@ class PhotoSorter:
                 break
 
             progress_callback(current, total, image_path.name)
-
             output_filename = build_output_filename(event_name, image_path.name)
 
             try:
@@ -156,56 +139,57 @@ class PhotoSorter:
                 safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
                 counts["unmatched"] += 1
                 continue
-            except Exception as exc:  # noqa: BLE001
-                self.logger.error("Could not open %s: %s — skipping", image_path.name, exc)
+            except Exception as exc:
+                self.logger.error("Could not open %s: %s - skipping", image_path.name, exc)
                 counts["skipped"] += 1
                 continue
 
             try:
-                face_locations = face_recognition.face_locations(rgb_image)  # HOG — fast
+                # 1. Detect face locations (HOG fast detection with CNN fallback to prevent missed faces)
+                face_locations = face_recognition.face_locations(rgb_image, model="hog")
                 if not face_locations:
-                    face_locations = face_recognition.face_locations(rgb_image, model="cnn")  # CNN fallback
-                face_encodings = face_recognition.face_encodings(
-                    rgb_image, face_locations, num_jitters=3, model="large"
-                )
-            except Exception as exc:  # noqa: BLE001
+                    face_locations = face_recognition.face_locations(rgb_image, model="cnn")
+
+                # 2. Extract 128D embedding vectors for all detected faces in the event photo
+                face_encodings = face_recognition.face_encodings(rgb_image, face_locations)
+
+                if not face_encodings:
+                    self.logger.info("No face detected in %s -> _unmatched", image_path.name)
+                    safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
+                    counts["unmatched"] += 1
+                    continue
+
+                matched_students: set[str] = set()
+                # 3. Compare Euclidean distance against reference embeddings
+                for encoding in face_encodings:
+                    match = self._match_face_embedding(encoding)
+                    if match:
+                        matched_students.add(match)
+
+                # 4. Copy matched files to respective output directories
+                if matched_students:
+                    for student_name in matched_students:
+                        dest_folder = self.output_folder / student_name
+                        safe_copy(image_path, dest_folder, output_filename, self.logger)
+                        self.logger.info("Matched %s -> %s", image_path.name, student_name)
+                    counts["matched"] += 1
+                else:
+                    self.logger.info("No match (distance > %.2f): %s -> _unmatched", 
+                                     self.DISTANCE_THRESHOLD, image_path.name)
+                    safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
+                    counts["unmatched"] += 1
+
+            except Exception as exc:
                 self.logger.error("Face detection failed for %s: %s", image_path.name, exc)
                 safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
                 counts["unmatched"] += 1
-                continue
 
-            if not face_encodings:
-                self.logger.info("No face detected: %s → _unmatched", image_path.name)
-                safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
-                counts["unmatched"] += 1
-                continue
+            finally:
+                # Explicit garbage collection to prevent memory leaks
+                if 'rgb_image' in locals():
+                    del rgb_image
+                gc.collect()
 
-            matched_students: set[str] = set()
-            for encoding in face_encodings:
-                match = self._match_face(encoding)
-                if match:
-                    matched_students.add(match)
-
-            if matched_students:
-                for student_name in matched_students:
-                    dest_folder = self.output_folder / student_name
-                    safe_copy(image_path, dest_folder, output_filename, self.logger)
-                    self.logger.info(
-                        "Matched %s → %s", image_path.name, student_name
-                    )
-                counts["matched"] += 1
-            else:
-                self.logger.info("No match: %s → _unmatched", image_path.name)
-                safe_copy(image_path, self.output_folder / "_unmatched", output_filename, self.logger)
-                counts["unmatched"] += 1
-
-        self.logger.info(
-            "Sort complete — total=%d matched=%d unmatched=%d skipped=%d",
-            counts["total"],
-            counts["matched"],
-            counts["unmatched"],
-            counts["skipped"],
-        )
         return counts
 
     # ------------------------------------------------------------------
