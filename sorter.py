@@ -229,23 +229,17 @@ class PhotoSorter:
     # ------------------------------------------------------------------
 
     def _load_and_resize(self, image_path: Path) -> np.ndarray:
-        """Open image with Pillow, resize if needed, and return as RGB numpy array.
-
-        Resizing large images to at most MAX_IMAGE_DIMENSION on the longest side
-        dramatically reduces face_locations() time on CPU without meaningfully
-        reducing recognition accuracy.
-
-        Raises:
-            UnidentifiedImageError: If Pillow cannot read the file format.
-        """
+        """Reads an image, applies low-resource preprocessing, and returns a RGB NumPy array."""
         with Image.open(image_path) as img:
             img = img.convert("RGB")
             width, height = img.size
             longest = max(width, height)
+
             if longest > self.MAX_IMAGE_DIMENSION:
                 scale = self.MAX_IMAGE_DIMENSION / longest
                 new_size = (int(width * scale), int(height * scale))
                 img = img.resize(new_size, Image.LANCZOS)
+
             return np.array(img)
 
     def _match_face(self, encoding: np.ndarray) -> str | None:
