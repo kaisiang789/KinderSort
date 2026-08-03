@@ -143,3 +143,11 @@ Build Windows executable:
 pyinstaller --onefile --windowed --name "KinderSort" main.py
 # Output: dist/KinderSort.exe
 ```
+## 📄 Additional Features & Deployment
+1. One-Click Generation of Student Word Attendance List (Roster Docx Export)
+
+- Feature Description: The system not only organizes photos but also integrates with python-docx. Clicking the "Generate Roster Docx" button will automatically scan the Reference folder.
+
+- Output: Automatically generates a 3-column grid-formatted Student_Roster_Grid.docx file containing all students' ID photos and names.
+
+- Applicable Scenarios: Helps kindergarten teachers quickly print paper attendance/sign-off lists before outdoor activities.
