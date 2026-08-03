@@ -31,7 +31,7 @@ class PhotoSorter:
         summary = sorter.sort_all(progress_cb, cancelled_cb)
     """
 
-    DISTANCE_THRESHOLD = 0.55
+    DISTANCE_THRESHOLD = 0.455
     """Maximum face distance to consider a match (lower = stricter)."""
 
     MAX_IMAGE_DIMENSION = 1000
