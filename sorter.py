@@ -58,25 +58,12 @@ class PhotoSorter:
     # Reference loading
     # ------------------------------------------------------------------
 
-    def load_references(
+        def load_references(
         self,
         progress_callback: Callable[[int, int, str], None] | None = None,
     ) -> list[str]:
-        """Encode every reference photo and store by student name.
-
-        Iterates over image files in reference_folder.  The student name is the
-        filename stem (e.g. ``Ali.jpg`` → ``"Ali"``).
-
-        Args:
-            progress_callback: Optional callable with ``(current, total, name)``
-                called after each student is processed so the GUI can update.
-
-        Returns:
-            List of student names whose reference photo had no detectable face.
-            Callers should show a warning for each name in this list.
-        """
+        """Stage 1: Load reference photos and extract high-precision face embeddings using Multi-Jitter."""
         no_face_names: list[str] = []
-
         reference_images = sorted(
             p for p in self.reference_folder.iterdir() if is_image_file(p)
         )
@@ -90,39 +77,36 @@ class PhotoSorter:
             student_name = ref_path.stem
             if progress_callback:
                 progress_callback(current, total, student_name)
-            try:
-                image = face_recognition.load_image_file(str(ref_path))
-                locations = face_recognition.face_locations(image, model="cnn")
-                encodings = face_recognition.face_encodings(
-                    image, known_face_locations=locations, num_jitters=10, model="large"
-                )
 
-                if not encodings:
-                    self.logger.warning(
-                        "No face detected in reference photo for %s (%s)",
-                        student_name,
-                        ref_path.name,
-                    )
+            try:
+                rgb_image = self._load_and_resize(ref_path)
+
+                # Primary detection using fast HOG; fallback to CNN if no face is detected
+                locations = face_recognition.face_locations(rgb_image, model="hog")
+                if not locations:
+                    locations = face_recognition.face_locations(rgb_image, model="cnn")
+
+                if not locations:
+                    self.logger.warning("No face detected in reference photo for %s", student_name)
                     no_face_names.append(student_name)
                     continue
 
-                if len(encodings) > 1:
-                    self.logger.warning(
-                        "Multiple faces in reference photo for %s — using first face only",
-                        student_name,
-                    )
-
-                self._student_encodings[student_name] = encodings[0]
-                self.logger.info("Loaded reference for %s", student_name)
-
-            except Exception as exc:  # noqa: BLE001
-                self.logger.error(
-                    "Could not read reference photo %s: %s", ref_path.name, exc
+                # Extract face embeddings; num_jitters=5 computes an averaged, robust embedding vector
+                encodings = face_recognition.face_encodings(
+                    rgb_image, known_face_locations=locations, num_jitters=5
                 )
 
-        self.logger.info(
-            "Loaded %d student reference(s)", len(self._student_encodings)
-        )
+                if encodings:
+                    self._student_encodings[student_name] = encodings[0]
+                    self._student_names.append(student_name)
+                    self.logger.info("Loaded & Profiled 128D Embedding for: %s", student_name)
+                else:
+                    no_face_names.append(student_name)
+
+            except Exception as exc:
+                self.logger.error("Could not process reference %s: %s", ref_path.name, exc)
+                no_face_names.append(student_name)
+
         return no_face_names
 
     # ------------------------------------------------------------------
