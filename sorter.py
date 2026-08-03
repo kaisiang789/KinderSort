@@ -34,7 +34,7 @@ class PhotoSorter:
     DISTANCE_THRESHOLD = 0.455
     """Maximum face distance to consider a match (lower = stricter)."""
 
-    MAX_IMAGE_DIMENSION = 1000
+   MAX_IMAGE_DIMENSION = 1200
     """Longest side in pixels after resizing for face detection (performance)."""
 
     def __init__(
