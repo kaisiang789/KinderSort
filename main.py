@@ -359,8 +359,9 @@ class KinderSortApp(tk.Tk):
             )
             return
 
-        ref_dir = self._reference_var.get().strip()
-        out_dir = self._output_var.get().strip()
+        ref_path = Path(ref)
+        out_path = Path(out_dir) if out_dir else ref_path
+        out_path.mkdir(parents=True, exist_ok=True)
 
         if not ref_dir:
             messagebox.showerror("Error", "Please select a Reference Photos folder first.")
