@@ -37,19 +37,22 @@ class PhotoSorter:
    MAX_IMAGE_DIMENSION = 1200
     """Longest side in pixels after resizing for face detection (performance)."""
 
-    def __init__(
+   def _init_(
         self,
         reference_folder: Path,
         events_folder: Path,
         output_folder: Path,
         logger: logging.Logger,
+        api_key: str = "",  # Preserved for interface compatibility
     ) -> None:
-        """Store folder paths and logger; initialise empty encoding dict."""
         self.reference_folder = reference_folder
         self.events_folder = events_folder
         self.output_folder = output_folder
         self.logger = logger
+
+        # Stores 128-dimensional face embedding vectors for students: {"Ljj": np.array([...]), ...}
         self._student_encodings: dict[str, np.ndarray] = {}
+        self._student_names: list[str] = []
 
     # ------------------------------------------------------------------
     # Reference loading
