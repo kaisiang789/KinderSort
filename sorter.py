@@ -209,20 +209,29 @@ class PhotoSorter:
                 img = img.resize(new_size, Image.LANCZOS)
 
             return np.array(img)
-    def _match_face(self, encoding: np.ndarray) -> str | None:
-        """Find the closest student encoding within DISTANCE_THRESHOLD.
-
-        Uses face_distance() + argmin rather than compare_faces() booleans so
-        each detected face always matches at most one student — the nearest one.
-
-        Args:
-            encoding: 128-d face encoding from face_recognition.
-
-        Returns:
-            Student name string if a match is found, otherwise None.
-        """
+    def _match_face_embedding(self, encoding: np.ndarray) -> str | None:
+        """Calculates Euclidean distance and identifies the matching student based on threshold."""
         if not self._student_encodings:
             return None
+
+        names = list(self._student_encodings.keys())
+        known_encodings = np.array(list(self._student_encodings.values()))
+
+        # Compute Euclidean distance vector
+        distances = face_recognition.face_distance(known_encodings, encoding)
+        best_idx = int(np.argmin(distances))
+        best_distance = distances[best_idx]
+
+        self.logger.debug(
+            "Closest match: %s with distance: %.4f (Threshold: %.2f)",
+            names[best_idx], best_distance, self.DISTANCE_THRESHOLD
+        )
+
+        # Classified as the same person if distance is below threshold
+        if best_distance <= self.DISTANCE_THRESHOLD:
+            return names[best_idx]
+
+        return None
 
         names = list(self._student_encodings.keys())
         known_encodings = np.array(list(self._student_encodings.values()))
