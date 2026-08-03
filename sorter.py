@@ -228,7 +228,7 @@ class PhotoSorter:
     # Helpers
     # ------------------------------------------------------------------
 
-    def _load_and_resize(self, image_path: Path) -> np.ndarray:
+   def _load_and_resize(self, image_path: Path) -> np.ndarray:
         """Reads an image, applies low-resource preprocessing, and returns a RGB NumPy array."""
         with Image.open(image_path) as img:
             img = img.convert("RGB")
@@ -241,7 +241,6 @@ class PhotoSorter:
                 img = img.resize(new_size, Image.LANCZOS)
 
             return np.array(img)
-
     def _match_face(self, encoding: np.ndarray) -> str | None:
         """Find the closest student encoding within DISTANCE_THRESHOLD.
 
