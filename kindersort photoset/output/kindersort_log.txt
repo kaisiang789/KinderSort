@@ -1,0 +1,36 @@
+2026-08-03 15:51:33 [INFO] Loaded & Profiled 128D Embedding for: ljj
+2026-08-03 15:51:36 [INFO] Loaded & Profiled 128D Embedding for: zjl
+2026-08-03 15:51:36 [INFO] Starting High-Precision Face Sorting - 8 images found
+2026-08-03 15:51:38 [DEBUG] Closest match: ljj with distance: 0.6726 (Threshold: 0.46)
+2026-08-03 15:51:38 [DEBUG] Closest match: ljj with distance: 0.6124 (Threshold: 0.46)
+2026-08-03 15:51:38 [DEBUG] Closest match: ljj with distance: 0.6926 (Threshold: 0.46)
+2026-08-03 15:51:38 [DEBUG] Closest match: ljj with distance: 0.4339 (Threshold: 0.46)
+2026-08-03 15:51:38 [DEBUG] Copied event1.png → C:\Users\User\Desktop\kindersort\output new\ljj\Event__event1.png
+2026-08-03 15:51:38 [INFO] Matched event1.png -> ljj
+2026-08-03 15:51:39 [DEBUG] Closest match: ljj with distance: 0.5719 (Threshold: 0.46)
+2026-08-03 15:51:39 [DEBUG] Closest match: ljj with distance: 0.4899 (Threshold: 0.46)
+2026-08-03 15:51:39 [INFO] No match (distance > 0.46): event2.jpg -> _unmatched
+2026-08-03 15:51:39 [DEBUG] Copied event2.jpg → C:\Users\User\Desktop\kindersort\output new\_unmatched\Event__event2.jpg
+2026-08-03 15:51:40 [DEBUG] Closest match: ljj with distance: 0.3234 (Threshold: 0.46)
+2026-08-03 15:51:40 [DEBUG] Closest match: ljj with distance: 0.6541 (Threshold: 0.46)
+2026-08-03 15:51:40 [DEBUG] Copied event3.jpg → C:\Users\User\Desktop\kindersort\output new\ljj\Event__event3.jpg
+2026-08-03 15:51:40 [INFO] Matched event3.jpg -> ljj
+2026-08-03 15:51:41 [DEBUG] Closest match: zjl with distance: 0.4770 (Threshold: 0.46)
+2026-08-03 15:51:41 [DEBUG] Closest match: ljj with distance: 0.6445 (Threshold: 0.46)
+2026-08-03 15:51:41 [INFO] No match (distance > 0.46): event4.jpg -> _unmatched
+2026-08-03 15:51:41 [DEBUG] Copied event4.jpg → C:\Users\User\Desktop\kindersort\output new\_unmatched\Event__event4.jpg
+2026-08-03 15:51:42 [DEBUG] Closest match: zjl with distance: 0.3455 (Threshold: 0.46)
+2026-08-03 15:51:42 [DEBUG] Closest match: ljj with distance: 0.6004 (Threshold: 0.46)
+2026-08-03 15:51:42 [DEBUG] Copied event5.jpg → C:\Users\User\Desktop\kindersort\output new\zjl\Event__event5.jpg
+2026-08-03 15:51:42 [INFO] Matched event5.jpg -> zjl
+2026-08-03 15:51:43 [DEBUG] Closest match: zjl with distance: 0.5082 (Threshold: 0.46)
+2026-08-03 15:51:43 [DEBUG] Closest match: ljj with distance: 0.3946 (Threshold: 0.46)
+2026-08-03 15:51:43 [DEBUG] Copied event6.jpg → C:\Users\User\Desktop\kindersort\output new\ljj\Event__event6.jpg
+2026-08-03 15:51:43 [INFO] Matched event6.jpg -> ljj
+2026-08-03 15:51:44 [DEBUG] Closest match: ljj with distance: 0.6244 (Threshold: 0.46)
+2026-08-03 15:51:44 [DEBUG] Closest match: ljj with distance: 0.5425 (Threshold: 0.46)
+2026-08-03 15:51:44 [INFO] No match (distance > 0.46): event7.jpg -> _unmatched
+2026-08-03 15:51:44 [DEBUG] Copied event7.jpg → C:\Users\User\Desktop\kindersort\output new\_unmatched\Event__event7.jpg
+2026-08-03 15:51:45 [DEBUG] Closest match: ljj with distance: 0.3608 (Threshold: 0.46)
+2026-08-03 15:51:45 [DEBUG] Copied event8.jpg → C:\Users\User\Desktop\kindersort\output new\ljj\Event__event8.jpg
+2026-08-03 15:51:45 [INFO] Matched event8.jpg -> ljj
