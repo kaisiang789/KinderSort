@@ -209,7 +209,7 @@ class KinderSortApp(tk.Tk):
 
     def _on_start(self) -> None:
         """Validate inputs then launch the worker thread for all heavy work."""
-       ref = self._reference_var.get().strip().strip('"')
+        ref = self._reference_var.get().strip().strip('"')
         events = self._events_var.get().strip().strip('"')
         output = self._output_var.get().strip().strip('"')
 
