@@ -28,7 +28,7 @@ except ImportError:
 # ---------------------------------------------------------------------------
 BUILTIN_NVIDIA_API_KEY = os.environ.get(
     "NVIDIA_API_KEY", 
-    "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"  
+    "YOUR_API_KEY"  
 )
 
 
